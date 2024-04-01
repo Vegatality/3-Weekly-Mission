@@ -56,7 +56,7 @@ module.exports = {
         controlComponents: ['input'],
       },
     ],
-    'import/no-cycle': 'off', // TODO: 해결법 알아보기
+    // 'import/no-cycle': 'off',
     'react/react-in-jsx-scope': 'off',
     'import/no-absolute-path': 'off',
     'consistent-return': 'off',
@@ -164,7 +164,7 @@ module.exports = {
             position: 'after',
           },
           {
-            pattern: '@{lib,utils,hooks,event,api}/**/*',
+            pattern: '@{lib,utils,hooks,event,api,provider,queries}/**/*',
             group: 'internal',
             position: 'after',
           },
