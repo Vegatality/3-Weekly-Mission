@@ -1,19 +1,32 @@
 import classNames from 'classnames/bind';
 
-import { TSampleFolderLink } from '@api/shared-page/getSampleUserFolders';
+import { LinkType } from '@api/link';
 import { useMatchedLinksWithDebounce } from '@hooks/useMatchedLinksWithDebounce';
 
 import styles from './CardContainer.module.css';
 import Card from './comp/card/Card';
+import { useGetSortedFolderLinksData } from './hooks/useGetFolderLinks.query';
 
 const cn = classNames.bind(styles);
 
 type TCardContainerProps = {
-  links: TSampleFolderLink[] | [];
+  folderId: number;
   input?: string;
 };
 
-const CardContainer = ({ links, input }: TCardContainerProps) => {
+const CardContainer = ({ folderId, input }: TCardContainerProps) => {
+  const { data, status } = useGetSortedFolderLinksData(folderId);
+
+  if (status === 'pending') {
+    return <div>Loading...</div>;
+  }
+
+  let links: LinkType.Link[] = [];
+
+  if (status === 'success') {
+    links = data;
+  }
+
   const matchedLinks = useMatchedLinksWithDebounce(links, input, ['title', 'description', 'url']);
 
   return (

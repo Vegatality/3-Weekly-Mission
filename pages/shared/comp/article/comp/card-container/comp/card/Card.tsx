@@ -1,21 +1,22 @@
 import LinkCard from '@components/ui/molecules/card/link-card';
 import { TCardProviderContext } from '@components/ui/molecules/card/link-card/context/CardProvider';
 
-import { TSampleFolderLink } from '@api/shared-page/getSampleUserFolders';
+import { LinkType } from '@api/link';
 
 import styles from './Card.module.css';
 
 type TCardProps = {
-  link: TSampleFolderLink;
+  link: LinkType.Link;
 };
 const Card = ({ link }: TCardProps) => {
   const processedSharedPageLinkData: TCardProviderContext = {
     linkId: link.id,
-    createdAt: link.createdAt,
+    createdAt: link.created_at,
     description: link.description,
-    imageSource: link.imageSource,
+    imageSource: link.image_source,
     url: link.url,
     title: link.title,
+    favorite: link.favorite,
   };
 
   return (
