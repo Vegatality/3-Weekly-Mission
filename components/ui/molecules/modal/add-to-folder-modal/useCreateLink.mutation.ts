@@ -9,8 +9,8 @@ export const useCreateLink = () => {
 
   return useMutation({
     mutationFn: createLink,
-    onSuccess: (_, { folderId }) => {
-      queryClient.invalidateQueries({ queryKey: folderQueryKeys.folderInfo(folderId) });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: folderQueryKeys.masterKey() });
       queryClient.invalidateQueries({ queryKey: linkQueryKeys.masterKey() });
     },
   });
