@@ -10,8 +10,13 @@ type TCardImageProps = {
 const CardImage = ({ alt, ...rest }: TCardImageProps) => {
   const { imageSource } = useCardProvider();
   const altImage = `/images/shared/no-image.svg`;
+  let protocolRelativeUrl = '';
 
-  return <Image priority fill alt={alt} src={imageSource || altImage} {...rest} />;
+  if (imageSource) {
+    protocolRelativeUrl = imageSource.startsWith('//') ? `${window.location.protocol}${imageSource}` : imageSource;
+  }
+
+  return <Image priority fill alt={alt} src={protocolRelativeUrl || altImage} {...rest} />;
 };
 
 export default CardImage;
