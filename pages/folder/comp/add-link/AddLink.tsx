@@ -6,37 +6,56 @@ import { mediaBreakpoint } from '@style/media-breakpoint/mediaBreakpoint';
 import { zIndex } from '@style/z-index/zIndex';
 
 import AddLinkBar from '@components/ui/molecules/bar/add-link-bar/AddLinkBar';
-import AddToFolderModal from '@components/ui/molecules/modal/add-to-folder-modal/AddToFolderModal';
+import { AddToFolderModal } from '@components/ui/molecules/modal/add-to-folder-modal';
+import { useFolderNameAndLinkCount } from '@pages/folder/hooks/useFolderNameAndLinkCount.query';
 
+import { useModalList } from '@hooks/use-modal';
 import { useInput } from '@hooks/useInput';
-import { useModal } from '@hooks/useModal';
 
 import styles from './AddLink.module.css';
 
-type TAddLinkProps = {
+type AddLinkProps = {
   shouldAddLinkLocateBottom?: boolean;
 };
-const AddLink = forwardRef<HTMLElement | null, TAddLinkProps>(({ shouldAddLinkLocateBottom }, ref) => {
-  // todo : 폴더 이름들을 받아야 함.
-  // 폴더 내부의 링크의 개수를 받아야 함.
+const AddLink = forwardRef<HTMLElement | null, AddLinkProps>(({ shouldAddLinkLocateBottom }, ref) => {
   const [input, onChange, clearInput] = useInput('');
-  const { openModal } = useModal();
+  const { openModalList } = useModalList();
+  const { data, status } = useFolderNameAndLinkCount();
 
-  const handleModal = () => {
-    openModal({
-      Component: AddToFolderModal,
-      props: { linkUrl: input, onClose: clearInput },
-    });
+  const openAddToFolderModal = () => {
+    if (status === 'success') {
+      openModalList({
+        modalKey: ['addToFolderModal'],
+        ModalComponent: AddToFolderModal,
+        props: { linkUrl: input, onClose: clearInput, folderList: data },
+      });
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      openAddToFolderModal();
+    }
   };
 
   return (
     <>
       <section ref={ref} className={styles['add-link-area']}>
-        <AddLinkBar handleModal={handleModal} input={input} onChange={onChange} />
+        <AddLinkBar
+          openAddToFolderModal={openAddToFolderModal}
+          input={input}
+          onChange={onChange}
+          onKeyDown={handleKeyDown}
+        />
       </section>
       {shouldAddLinkLocateBottom && (
         <StAddLinkBottomArea>
-          <AddLinkBar handleModal={handleModal} input={input} onChange={onChange} />
+          <AddLinkBar
+            openAddToFolderModal={openAddToFolderModal}
+            input={input}
+            onChange={onChange}
+            onKeyDown={handleKeyDown}
+          />
         </StAddLinkBottomArea>
       )}
     </>

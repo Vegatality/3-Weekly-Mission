@@ -2,13 +2,14 @@ import Image from 'next/image';
 
 import styles from './AddLinkBar.module.css';
 
-type TAddLinkBarProps = {
+type AddLinkBarProps = {
   input: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleModal: () => void;
+  openAddToFolderModal: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const AddLinkBar = ({ handleModal, input, onChange }: TAddLinkBarProps) => {
+const AddLinkBar = ({ openAddToFolderModal, input, onChange, onKeyDown }: AddLinkBarProps) => {
   return (
     <div className={styles['add-link-box']}>
       <div className={styles['add-link-input-box']}>
@@ -26,9 +27,10 @@ const AddLinkBar = ({ handleModal, input, onChange }: TAddLinkBarProps) => {
           placeholder='링크를 추가해 보세요'
           onChange={onChange}
           value={input}
+          onKeyDown={onKeyDown}
         />
       </div>
-      <button type='button' className={styles['add-link-cta']} onClick={handleModal}>
+      <button type='button' className={styles['add-link-cta']} onClick={openAddToFolderModal}>
         추가하기
       </button>
     </div>
