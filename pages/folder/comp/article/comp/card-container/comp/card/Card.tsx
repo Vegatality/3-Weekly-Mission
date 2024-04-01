@@ -5,39 +5,46 @@ import classNames from 'classnames/bind';
 import SelectMenu from '@components/ui/atoms/select-menu';
 import LinkCard from '@components/ui/molecules/card/link-card';
 import { TCardProviderContext } from '@components/ui/molecules/card/link-card/context/CardProvider';
-import AddToFolderModal from '@components/ui/molecules/modal/add-to-folder-modal/AddToFolderModal';
-import LinkDeleteModal from '@components/ui/molecules/modal/link-delete-modal/LinkDeleteModal';
+import { AddToFolderModal } from '@components/ui/molecules/modal/add-to-folder-modal';
+import { LinkDeleteModal } from '@components/ui/molecules/modal/link-delete-modal';
+import { useFolderNameAndLinkCount } from '@pages/folder/hooks/useFolderNameAndLinkCount.query';
+import { useGetFolderId } from '@pages/folder/hooks/useGetFolderId';
 
-import { TFolderLink } from '@api/folder-page/getSortedFolderLinksData';
-import { useCloseModal } from '@hooks/useCloseModal';
-import { useModal } from '@hooks/useModal';
+import { LinkType } from '@api/link';
+import { useModalList, useToggleModal } from '@hooks/use-modal';
 
 import styles from './Card.module.css';
 
 const cn = classNames.bind(styles);
 
-type TCardProps = {
-  link: TFolderLink;
+type CardProps = {
+  link: LinkType.Link;
 };
 
-const Card = ({ link }: TCardProps) => {
+const Card = ({ link }: CardProps) => {
   const [selectedLinkId, setSelectedLinkId] = useState<number | null>(null);
-  const { isModalOpen, modalRef, toggleModal } = useCloseModal<HTMLDivElement>();
+  const { isModalOpen, modalRef, toggleModal } = useToggleModal<HTMLDivElement>();
+  const { data, status } = useFolderNameAndLinkCount();
+  const folderId = useGetFolderId();
 
   const handleKebabButton = (linkId: number) => {
     setSelectedLinkId(linkId);
     toggleModal();
   };
 
-  const { openModal } = useModal();
+  const { openModalList } = useModalList();
 
   const handleDeleteMenuBtn = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ModalComponent: typeof LinkDeleteModal,
     linkUrl: string,
+    linkId: number,
   ) => {
     e.preventDefault();
-    openModal({ Component: ModalComponent, props: { linkUrl } });
+
+    if (folderId) {
+      openModalList({ modalKey: ['linkDeleteModal'], ModalComponent, props: { linkUrl, linkId } });
+    }
   };
 
   const handleFolderAddMenuBtn = (
@@ -46,7 +53,10 @@ const Card = ({ link }: TCardProps) => {
     linkUrl: string,
   ) => {
     e.preventDefault();
-    openModal({ Component: ModalComponent, props: { linkUrl } });
+
+    if (folderId && status === 'success') {
+      openModalList({ modalKey: ['addToFolderModal'], ModalComponent, props: { linkUrl, folderId, folderList: data } });
+    }
   };
 
   const processedFolderPageLinkData: TCardProviderContext = {
@@ -56,7 +66,7 @@ const Card = ({ link }: TCardProps) => {
     imageSource: link.image_source,
     url: link.url,
     title: link.title,
-    folderId: link.folder_id,
+    favorite: link.favorite,
   };
 
   return (
@@ -72,7 +82,7 @@ const Card = ({ link }: TCardProps) => {
             <LinkCard.KebabButton onClickHandler={() => handleKebabButton(link.id)} />
             {selectedLinkId === link.id && isModalOpen && (
               <SelectMenu modalRef={modalRef}>
-                <SelectMenu.StMenuButton onClick={(e) => handleDeleteMenuBtn(e, LinkDeleteModal, link.url)}>
+                <SelectMenu.StMenuButton onClick={(e) => handleDeleteMenuBtn(e, LinkDeleteModal, link.url, link.id)}>
                   삭제하기
                 </SelectMenu.StMenuButton>
                 <SelectMenu.StMenuButton onClick={(e) => handleFolderAddMenuBtn(e, AddToFolderModal, link.url)}>

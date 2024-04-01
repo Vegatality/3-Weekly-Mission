@@ -1,19 +1,19 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, memo, SetStateAction, useEffect } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
 
-import FolderAddModal from '@components/ui/molecules/modal/folder-add-modal/FolderAddModal';
+import { FolderAddModal } from '@components/ui/molecules/modal/folder-add-modal';
 
-import { useModal } from '@hooks/useModal';
+import { useModalList } from '@hooks/use-modal';
 
 import styles from './FolderLinkCategory.module.css';
-import { useGetFolderCategoryList } from './hooks/useGetFolderCategoryList';
+import { useGetFolderCategoryList } from './hooks/useGetFolderCategoryList.query';
 
-type TFolderLinkCategoryProps = {
+type FolderLinkCategoryProps = {
   selectedFolderId: number | 'total';
   handleFolderIdAndName: Dispatch<
     SetStateAction<{
@@ -28,14 +28,27 @@ export interface FolderIdQuery extends ParsedUrlQuery {
   folderId: string[];
 }
 
-const FolderLinkCategory = ({ selectedFolderId, handleFolderIdAndName, router }: TFolderLinkCategoryProps) => {
-  const folderCategoryList = useGetFolderCategoryList();
+const FolderLinkCategory = ({ selectedFolderId, handleFolderIdAndName, router }: FolderLinkCategoryProps) => {
+  const { data: folderCategoryList = [] } = useGetFolderCategoryList();
 
-  const { openModal } = useModal();
+  const { openModalList } = useModalList();
+
+  const openFolderAddModal = () => {
+    openModalList({ modalKey: ['폴더 추가'], ModalComponent: FolderAddModal, props: null });
+  };
 
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
     const { folderId: fi } = router.query as FolderIdQuery;
-    const folderId = fi?.[0];
+
+    if (!fi) {
+      return;
+    }
+
+    const folderId = fi[0];
     const foundFolder = folderCategoryList.find((folder) => folder.id === Number(folderId));
     const foundFolderName = foundFolder?.name ?? '전체';
 
@@ -43,7 +56,7 @@ const FolderLinkCategory = ({ selectedFolderId, handleFolderIdAndName, router }:
       folderId: folderId ? Number(folderId) : 'total',
       folderName: foundFolderName,
     });
-  }, [folderCategoryList, router]);
+  }, [folderCategoryList, router, handleFolderIdAndName]);
 
   return (
     <>
@@ -73,7 +86,7 @@ const FolderLinkCategory = ({ selectedFolderId, handleFolderIdAndName, router }:
           <button
             type='button'
             className={styles['folder-link-category-add-btn']}
-            onClick={() => openModal({ Component: FolderAddModal })} // no event dispatch
+            onClick={openFolderAddModal} // no event dispatch
           >
             <Image
               fill
@@ -84,11 +97,7 @@ const FolderLinkCategory = ({ selectedFolderId, handleFolderIdAndName, router }:
           </button>
 
           {/* on mobile size */}
-          <button
-            type='button'
-            className={styles['floating-category-add-btn']}
-            onClick={() => openModal({ Component: FolderAddModal })}
-          >
+          <button type='button' className={styles['floating-category-add-btn']} onClick={openFolderAddModal}>
             <span className={styles['floating-category-add-btn__text']}>폴더 추가</span>
             <Image
               width={16}
@@ -104,4 +113,4 @@ const FolderLinkCategory = ({ selectedFolderId, handleFolderIdAndName, router }:
   );
 };
 
-export default FolderLinkCategory;
+export default memo(FolderLinkCategory);

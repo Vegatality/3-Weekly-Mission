@@ -1,9 +1,8 @@
 import CommonHeader from '@components/ui/organisms/header/contents-page-header/CommonHeader';
-
-import { useGetProfileData } from './hooks/useGetProfileData';
+import { useGetCurrentUserProfileData } from '@pages/hooks/useGetCurrentUserProfileData.query';
 
 const Header = () => {
-  const profileData = useGetProfileData();
+  const profileData = useGetCurrentUserProfileData();
 
   return <CommonHeader profileData={profileData} />;
 };

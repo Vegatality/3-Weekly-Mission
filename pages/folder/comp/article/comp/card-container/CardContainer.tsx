@@ -3,13 +3,15 @@ import { useState } from 'react';
 import classNames from 'classnames/bind';
 import { useRouter } from 'next/router';
 
+import { LinkType } from '@api/link';
 import { useMatchedLinksWithDebounce } from '@hooks/useMatchedLinksWithDebounce';
 
 import styles from './CardContainer.module.css';
 import CardContainerOptions from './comp/card-container-options/CardContainerOptions';
 import Card from './comp/card/Card';
 import FolderLinkCategory from './comp/folder-link-category/FolderLinkCategory';
-import { useGetSortedFolderLinksData } from './comp/hooks/useGetSortedFolderLinksData';
+import { useGetSortedFolderLinksData } from './comp/hooks/useGetSortedFolderLinksData.query';
+import { useGetTotalLinksDataQuery } from './comp/hooks/useGetTotalLinksData.query';
 
 const cn = classNames.bind(styles);
 
@@ -25,7 +27,21 @@ const CardContainer = ({ input }: TCardContainerProps) => {
 
   const router = useRouter();
 
-  const sortedLinks = useGetSortedFolderLinksData(folderIdAndName);
+  let sortedLinks: LinkType.Link[] = [];
+  const sortedQueryResult = useGetSortedFolderLinksData(folderIdAndName.folderId);
+  const { data: totalFolderLinks = [], status } = useGetTotalLinksDataQuery(folderIdAndName.folderId);
+
+  if (folderIdAndName.folderId !== 'total' && sortedQueryResult) {
+    const { data: sortedFolderLinks, status } = sortedQueryResult;
+
+    if (status === 'success') {
+      sortedLinks = sortedFolderLinks;
+    }
+  }
+
+  if (folderIdAndName.folderId === 'total' && status === 'success') {
+    sortedLinks = totalFolderLinks;
+  }
 
   const matchedLinks = useMatchedLinksWithDebounce(sortedLinks, input, ['title', 'description', 'url']);
 
@@ -40,7 +56,7 @@ const CardContainer = ({ input }: TCardContainerProps) => {
         <div className={cn('card-container-name-option-box')}>
           <h3 className={cn('card-container-category-name')}>{folderIdAndName.folderName}</h3>
           {/* {folderIdAndName.folderId !== 'total' && !!sortedLinks?.length && <CardContainerOptions />} */}
-          {folderIdAndName.folderId !== 'total' && <CardContainerOptions />}
+          {folderIdAndName.folderId !== 'total' && <CardContainerOptions folderName={folderIdAndName.folderName} />}
         </div>
       </div>
       {sortedLinks?.length ? (

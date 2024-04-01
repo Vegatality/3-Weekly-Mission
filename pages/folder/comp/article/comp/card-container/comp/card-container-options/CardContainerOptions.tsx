@@ -2,35 +2,57 @@ import { useMemo } from 'react';
 
 import Image from 'next/image';
 
-import FolderDeleteModal from '@components/ui/molecules/modal/folder-delete-modal/FolderDeleteModal';
-import FolderEditModal from '@components/ui/molecules/modal/folder-edit-modal/FolderEditModal';
-import FolderShareModal from '@components/ui/molecules/modal/folder-share-modal/FolderShareModal';
+import { FolderDeleteModal } from '@components/ui/molecules/modal/folder-delete-modal';
+import { FolderEditModal } from '@components/ui/molecules/modal/folder-edit-modal';
+import { FolderShareModal } from '@components/ui/molecules/modal/folder-share-modal';
+import { useGetFolderId } from '@pages/folder/hooks/useGetFolderId';
 
-import { useModal } from '@hooks/useModal';
+import { useModalList } from '@hooks/use-modal';
 
 import styles from './CardContainerOptions.module.css';
 
-const CardContainerOptions = () => {
-  const { openModal } = useModal();
+interface CardContainerOptionsProps {
+  folderName: string;
+}
 
-  // TODO: 현재 폴더 네임 내려받기 혹은 주소에서~
+const CardContainerOptions = ({ folderName }: CardContainerOptionsProps) => {
+  const { openModalList } = useModalList();
+
+  const folderId = useGetFolderId();
+
   const folderOptions = useMemo(
     () => [
-      { source: 'share', optionName: '공유', ModalComponent: FolderShareModal, folderName: '' },
-      { source: 'pen', optionName: '이름 변경', ModalComponent: FolderEditModal, folderName: '폴더 네임' },
-      { source: 'delete', optionName: '삭제', ModalComponent: FolderDeleteModal, folderName: '폴더 네임' },
+      { source: 'share', optionName: '공유', ModalComponent: FolderShareModal },
+      {
+        source: 'pen',
+        optionName: '이름 변경',
+        ModalComponent: FolderEditModal,
+      },
+      {
+        source: 'delete',
+        optionName: '삭제',
+        ModalComponent: FolderDeleteModal,
+      },
     ],
     [],
   );
 
   return (
     <div className={styles['card-container-options-box']}>
-      {folderOptions.map(({ ModalComponent, optionName, source, folderName }) => (
+      {folderOptions.map(({ ModalComponent, optionName, source }) => (
         <button
           type='button'
           className={styles['card-container-options-btn']}
           key={optionName}
-          onClick={() => openModal({ Component: ModalComponent, props: { folderName } })}
+          onClick={() => {
+            if (folderId) {
+              openModalList({
+                modalKey: [optionName],
+                ModalComponent,
+                props: { folderName, folderId },
+              });
+            }
+          }}
         >
           <Image
             width={18}

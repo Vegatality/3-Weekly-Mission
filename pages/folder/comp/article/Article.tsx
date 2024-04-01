@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import classNames from 'classnames/bind';
 
 import { useInput } from '@hooks/useInput';
@@ -21,4 +23,4 @@ const Article = () => {
   );
 };
 
-export default Article;
+export default memo(Article);
