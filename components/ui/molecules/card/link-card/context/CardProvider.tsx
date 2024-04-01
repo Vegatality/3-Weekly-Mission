@@ -1,14 +1,13 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 
 export type TCardProviderContext = {
-  [key: string]: any;
   linkId: number;
+  favorite: boolean;
   createdAt: string;
-  description: string | null;
-  imageSource?: string | null;
   url: string;
-  folderId?: number | null;
-  title: string | null;
+  title: string;
+  imageSource: string | null;
+  description: string | null;
 };
 
 type TCardProviderProps = PropsWithChildren<TCardProviderContext>;
