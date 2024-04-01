@@ -1,20 +1,20 @@
-import { FolderCategoryDataWithIdTotal } from '@pages/folder/comp/article/comp/card-container/comp/folder-link-category/hooks/useGetFolderCategoryList';
+import { FolderType } from '@api/folder';
 
 import { createWithEqualityFn } from './custom/traditional';
 import { shallow } from './custom/vanilla/shallow';
 
-type TFolderSlice = {
-  folderCategoryList: FolderCategoryDataWithIdTotal[];
+type FolderSlice = {
+  folderCategoryList: FolderType.FolderCategoryData[];
   userId: number | null;
   targetLink: number | null;
   currentFolderId: number | null;
   setUserId: (userId: number) => void;
-  setFolderCategoryList: (categories: FolderCategoryDataWithIdTotal[]) => void;
+  setFolderCategoryList: (categories: FolderType.FolderCategoryData[]) => void;
   setTargetLink: (targetLink: number) => void;
   setCurrentFolderId: (folderId: number) => void;
 };
 
-export const useFolderStore = createWithEqualityFn<TFolderSlice>()(
+export const useFolderStore = createWithEqualityFn<FolderSlice>()(
   (set) => ({
     userId: null,
     currentFolderId: null,

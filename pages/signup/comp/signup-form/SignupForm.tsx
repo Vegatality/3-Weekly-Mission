@@ -5,10 +5,11 @@ import InputWithLabel from '@components/ui/atoms/input/input-with-label';
 import SignForm from '@components/ui/molecules/form/sign-form';
 import { StErrorMsg } from '@pages/signin/comp/signin-form/SigninForm';
 
-import { checkEmailDuplication } from '@api/sign/checkEmailDuplication';
-import { signup } from '@api/sign/signup';
+import { checkEmailDuplication } from '@api/auth/checkEmailDuplication';
 import { useFormOnSubmit } from '@hooks/useFormOnSubmit';
 import { setToken } from '@utils/local-storage/setToken';
+
+import { useSignup } from './hooks/useSignup.mutation';
 
 import { EMAIL_REGEX } from '@/constant/regex';
 import { SIGN, SIGNUP_REGISTER_OPTIONS } from '@/constant/sign/sign';
@@ -19,6 +20,8 @@ type SignupFormProps = {
 };
 
 const SignupForm = ({ router }: SignupFormProps) => {
+  const { mutateAsync } = useSignup();
+
   const {
     register,
     handleSubmit,
@@ -33,10 +36,10 @@ const SignupForm = ({ router }: SignupFormProps) => {
       password: '',
       confirmPassword: '',
     },
-    onSubmit: async (inputs) => {
+    onSubmit: async ({ email, password }) => {
       try {
-        const res = await signup({ email: inputs.email, password: inputs.password });
-        setToken({ accessToken: res.data.accessToken, refreshToken: res.data.refreshToken });
+        const { accessToken, refreshToken } = await mutateAsync({ email, password });
+        setToken({ accessToken, refreshToken });
         reset();
         router.push('/folder');
       } catch (error) {
@@ -72,7 +75,11 @@ const SignupForm = ({ router }: SignupFormProps) => {
                 if (!EMAIL_REGEX.test(getValues().email)) return;
 
                 try {
-                  await checkEmailDuplication(getValues()[SIGN.EMAIL]);
+                  const { isUsableEmail } = await checkEmailDuplication(getValues()[SIGN.EMAIL]);
+
+                  if (!isUsableEmail) {
+                    throw new Error('409');
+                  }
                 } catch (error) {
                   if (error instanceof Error) {
                     if (Number(error.message) === 409) {

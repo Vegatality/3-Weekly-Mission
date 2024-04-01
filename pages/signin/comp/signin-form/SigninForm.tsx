@@ -5,9 +5,10 @@ import FormSubmitButton from '@components/ui/atoms/button/form-submit-btn/FormSu
 import InputWithLabel from '@components/ui/atoms/input/input-with-label';
 import SignForm from '@components/ui/molecules/form/sign-form';
 
-import { signin } from '@api/sign/signin';
 import { useFormOnSubmit } from '@hooks/useFormOnSubmit';
 import { setToken } from '@utils/local-storage/setToken';
+
+import { useSignin } from './hooks/useSignin.mutation';
 
 import { SIGN, SIGNIN_REGISTER_OPTIONS, SUBMIT_ERROR_MSG_LIST } from '@/constant/sign/sign';
 import { SigninInputs } from '@/interface/sign/sign';
@@ -17,6 +18,8 @@ type SigninFormProps = {
 };
 
 const SigninForm = ({ router }: SigninFormProps) => {
+  const { mutateAsync } = useSignin();
+
   const {
     register,
     handleSubmit,
@@ -29,10 +32,10 @@ const SigninForm = ({ router }: SigninFormProps) => {
       email: '',
       password: '',
     },
-    onSubmit: async (inputs) => {
+    onSubmit: async ({ email, password }) => {
       try {
-        const res = await signin({ email: inputs.email, password: inputs.password });
-        setToken({ accessToken: res.data.accessToken, refreshToken: res.data.refreshToken });
+        const { accessToken, refreshToken } = await mutateAsync({ email, password });
+        setToken({ accessToken, refreshToken });
         reset();
         router.push('/folder');
       } catch (error) {
