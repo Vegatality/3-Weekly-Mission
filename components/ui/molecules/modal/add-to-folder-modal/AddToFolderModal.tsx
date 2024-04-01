@@ -1,67 +1,85 @@
-import { MutableRefObject, useState } from 'react';
+import { useState } from 'react';
 
 import styled from 'styled-components';
 
+import { ModalComponentForList } from '@hooks/use-modal/types';
+
 import Modal from '..';
 import { StModalSubText } from '../StModalSubText';
+import { useCreateLink } from './useCreateLink.mutation';
 
-const mockArray = [
-  { folderName: '코딩팁', linkCount: 7 },
-  { folderName: '채용 사이트', linkCount: 12 },
-  { folderName: '유용한 글', linkCount: 30 },
-  { folderName: '나만의 장소', linkCount: 3 },
-];
-
-type TAddToFolderModal = {
+interface FolderNameAndLinkCount {
+  folderName: string;
+  linkCount: number;
+  id: number;
+}
+interface AddToFolderModalProps {
   modalName?: string;
-  linkUrl?: string;
-  closeModal?: (callback?: VoidFunction) => void;
-  modalRef?: MutableRefObject<HTMLElement | null> | null;
-};
+  linkUrl: string;
+  folderId?: number;
+  folderList: FolderNameAndLinkCount[];
+}
+
+const IMG_URL = '/images/folder/folder-icon-check.svg';
+
 /**
  * @description 폴더에 추가 모달
  */
-const AddToFolderModal = ({ modalName = '폴더에 추가', linkUrl, closeModal, modalRef }: TAddToFolderModal) => {
-  const [selectedFolder, setSelectedFolder] = useState<string[]>([]);
-  const imgUrl = '/images/folder/folder-icon-check.svg';
+const AddToFolderModal: ModalComponentForList<AddToFolderModalProps> = ({
+  modalName = '폴더에 추가',
+  linkUrl,
+  folderId: currentFolderId,
+  folderList,
+  closeModal,
+  modalRef,
+}) => {
+  const [selectedFolderId, setSelectedFolderId] = useState<number | undefined>(currentFolderId);
+  const { mutate } = useCreateLink();
 
-  const onSelectHandler = (folderName: string) => {
-    setSelectedFolder((prev) => {
-      if (prev.includes(folderName)) return [...prev.filter((f) => f !== folderName)];
+  const createLink = ({ folderId, url }: { folderId: number | undefined; url: string }) => {
+    if (folderId === undefined) {
+      return;
+    }
 
-      return [...prev, folderName];
-    });
+    // TODO: url 형식 안 맞으면 return;
+    mutate(
+      { folderId, url },
+      {
+        onSuccess: closeModal,
+      },
+    );
+  };
+
+  const onSelectHandler = (folderId: number) => {
+    setSelectedFolderId(folderId);
   };
 
   return (
     <Modal.StModalDim>
-      <Modal.StModalWrapper
-        ref={(node) => {
-          if (modalRef) modalRef.current = node;
-        }}
-        $rowGap={2.4}
-      >
+      <Modal.StModalWrapper ref={modalRef} $rowGap={2.4}>
         <Modal.StModalLabel as='div' $rowGap={0.8}>
           {modalName}
           <StModalSubText>{linkUrl}</StModalSubText>
         </Modal.StModalLabel>
         <StAddFolderListUl>
-          {mockArray.map(({ folderName, linkCount }) => {
-            const isSelected = selectedFolder.includes(folderName);
+          {folderList.map(({ folderName, linkCount, id }) => {
+            const isSelected = id === selectedFolderId;
 
             return (
-              <StAddFolderList key={folderName} $isSelected={isSelected} onClick={() => onSelectHandler(folderName)}>
+              <StAddFolderList key={id} $isSelected={isSelected} onClick={() => onSelectHandler(id)}>
                 <StAddFolderListTextBox>
                   {folderName}
                   <StAddFolderListLinkCount>{linkCount}개 링크</StAddFolderListLinkCount>
                 </StAddFolderListTextBox>
-                {isSelected && <StFolderCheckImg alt='폴더 체크 상태 이미지' src={imgUrl} />}
+                {isSelected && <StFolderCheckImg alt='폴더 체크 상태 이미지' src={IMG_URL} />}
               </StAddFolderList>
             );
           })}
         </StAddFolderListUl>
         <Modal.ModalCloseBtn closeModal={closeModal} />
-        <Modal.StModalActionBtn>추가하기</Modal.StModalActionBtn>
+        <Modal.StModalActionBtn onClick={() => createLink({ folderId: selectedFolderId, url: linkUrl })} type='button'>
+          추가하기
+        </Modal.StModalActionBtn>
       </Modal.StModalWrapper>
     </Modal.StModalDim>
   );
@@ -78,6 +96,24 @@ const StAddFolderListUl = styled.ul`
   display: flex;
   flex-direction: column;
   row-gap: 0.4rem;
+
+  max-height: 17.2rem;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgb(57 158 238 / 80%); /* 스크롤바 색상 */
+    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(36 204 216 / 49%); /*스크롤바 뒷 배경 색상*/
+    border-radius: 10px;
+  }
 `;
 
 const StAddFolderList = styled.li<{ $isSelected?: boolean }>`

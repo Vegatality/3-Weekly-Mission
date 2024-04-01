@@ -1,26 +1,36 @@
 import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import { FolderIdQuery } from '@pages/folder/comp/article/comp/card-container/comp/folder-link-category/FolderLinkCategory';
-
+import { ModalComponentPropsForList } from '@hooks/use-modal/types';
 import { useSNSShare } from '@hooks/useSNSShare';
 import { getUserId } from '@utils/session-storage/getUserId';
 
 import Modal from '..';
 import { StModalSubText } from '../StModalSubText';
 
-type TFolderShareModalProps = {
+interface FolderShareModalProps {
   modalName?: string;
-  folderName?: string;
-  closeModal?: () => void;
-};
+  folderName: string;
+  folderId: number;
+}
+
+interface SNSShareOption {
+  iconName: string;
+  text: string;
+  onClickHandler: () => void;
+}
 /**
  * @description 폴더 공유 모달
  */
-const FolderShareModal = ({ modalName = '폴더 공유', folderName, closeModal }: TFolderShareModalProps) => {
+const FolderShareModal = ({
+  modalName = '폴더 공유',
+  folderName,
+  closeModal,
+  modalRef,
+  folderId,
+}: ModalComponentPropsForList<FolderShareModalProps>) => {
   const [origin, setOriginAfterMount] = useState('');
 
   // /shared?user=1&folder=307
@@ -29,19 +39,16 @@ const FolderShareModal = ({ modalName = '폴더 공유', folderName, closeModal 
     setOriginAfterMount(window.location.origin);
   }, []);
 
-  const router = useRouter();
-  const { folderId } = router.query as FolderIdQuery;
-  const fi = folderId.length ? folderId[0] : '';
   const userId = getUserId();
 
   const { shareToFacebook, shareToKakaotalk, copyFolderUrl } = useSNSShare({
     title: 'Linkbrary',
     origin,
     userId,
-    folderId: fi,
+    folderId,
   });
 
-  const snsShareOptionsArray = [
+  const snsShareOptionsArray: SNSShareOption[] = [
     { iconName: 'kakao', text: '카카오톡', onClickHandler: shareToKakaotalk },
     { iconName: 'facebook', text: '페이스북', onClickHandler: shareToFacebook },
     { iconName: 'clipboard', text: '링크 복사', onClickHandler: copyFolderUrl },
@@ -49,7 +56,7 @@ const FolderShareModal = ({ modalName = '폴더 공유', folderName, closeModal 
 
   return (
     <Modal.StModalDim>
-      <Modal.StModalWrapper $rowGap={2.4}>
+      <Modal.StModalWrapper ref={modalRef} $rowGap={2.4}>
         <Modal.StModalLabel as='div' $rowGap={0.8}>
           {modalName}
           <StModalSubText>{folderName}</StModalSubText>

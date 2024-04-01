@@ -3,17 +3,17 @@ import { memo } from 'react';
 import classNames from 'classnames/bind';
 import Image from 'next/image';
 
-import { IProfileData } from '@api/folder-page/getProfileData';
+import { UserType } from '@api/user';
 
 import styles from './LoginSuccessProfile.module.css';
 
 const cn = classNames.bind(styles);
 
-type TLoginSuccessProfileProps = {
-  profileData: IProfileData;
+type LoginSuccessProfileProps = {
+  profileData: UserType.CurrentUserProfileData;
 };
 
-const LoginSuccessProfile = ({ profileData }: TLoginSuccessProfileProps) => {
+const LoginSuccessProfile = ({ profileData }: LoginSuccessProfileProps) => {
   const { email, image_source } = profileData;
 
   return (

@@ -1,6 +1,11 @@
 import styled from 'styled-components';
 
-const StModalActionBtn = styled.button.attrs<{ $gradientColor?: string; $originalColor?: string }>({ type: 'submit' })`
+const StModalActionBtn = styled.button.attrs<{ $gradientColor?: string; $originalColor?: string }>(
+  ({ type, ...rest }) => ({
+    type: type || 'submit',
+    ...rest,
+  }),
+)`
   width: 100%;
   height: 5.1rem;
 
