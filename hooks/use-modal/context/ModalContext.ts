@@ -1,6 +1,8 @@
+'use client';
+
 import { createContext, useContext } from 'react';
 
-import { TModalDispatchContext, TModalStateContext } from '.';
+import { TModalDispatchContext, TModalStateContext } from '../types';
 
 export const ModalStateContext = createContext<TModalStateContext>({
   ModalComponent: null,
@@ -18,4 +20,14 @@ export const useModalDispatch = () => {
   if (dispatcher === undefined) throw new Error('useModalDispatch should be within ModalProvider');
 
   return dispatcher;
+};
+
+export const useModalState = () => {
+  const state = useContext(ModalStateContext);
+
+  if (state.ModalComponent === null) {
+    throw new Error('useModalState should receive ModalComponent in the openModal function in order to be used.');
+  }
+
+  return state;
 };
