@@ -31,3 +31,34 @@ axiosToken.interceptors.request.use(
     return Promise.reject(error);
   },
 );
+
+axiosToken.interceptors.response.use(
+  (response) => {
+    // 실패하면 다시 보내는 로직(액세스 토큰이 만료되었을 때)
+    // 리프레쉬 토큰을 서버로 보내는 로직
+    return response;
+  },
+
+  (error: AxiosError | Error): Promise<AxiosError> => {
+    if (isAxiosError(error)) {
+      // 401 인증 오류
+      if (error.response?.status === 401) {
+        // 리프레쉬 토큰을 서버로 보내는 로직 (아직 과제 아님)
+      }
+
+      // 400 토큰 갱신 오류 (아직 과제 아님)
+    }
+
+    if (isAxiosError(error) && error.code === AxiosError.ECONNABORTED) {
+      const { method, url } = error.config as InternalAxiosRequestConfig;
+      logOnDev(`☢️ [API] ${method?.toUpperCase()} ${url} | Response`);
+      error.message = '로그인 후 이용해 주세요.';
+
+      return Promise.reject(error);
+    }
+
+    logOnDev(`☢️ [API] | Error ${error.message} Response`);
+
+    return Promise.reject(error);
+  },
+);
