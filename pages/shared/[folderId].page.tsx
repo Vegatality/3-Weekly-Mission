@@ -1,54 +1,41 @@
 import { ParsedUrlQuery } from 'querystring';
 
+import { dehydrate, DehydratedState } from '@tanstack/react-query';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Head from 'next/head';
 
-import { TSampleFolderLink } from '@api/shared-page/getSampleUserFolders';
-import { getSharedFolderLinks } from '@api/shared-page/getSharedFolderLinks';
-import { getSharedUserFolder, SharedUserFolder } from '@api/shared-page/getSharedUserFolder';
-import { getSharedUserProfileData, SharedUserProfile } from '@api/shared-page/getSharedUserProfileData';
+import { getFolderInfo } from '@api/folder/getFolderInfo';
 import { getStringTypeError } from '@api/util/getStringTypeError';
+import { getQueryClient } from '@lib/getQueryClient';
+import { promiseAllFactory } from '@utils/promise/promiseAllFactory';
 
 import Article from './comp/article/Article';
 import Banner from './comp/banner/Banner';
 import Footer from './comp/footer/Footer';
 import Header from './comp/header/Header';
+import { usePrefetchFolderLinks } from './hooks/usePrefetchFolderLinks.query';
+import { usePrefetchUserProfileData } from './hooks/usePrefetchUserProfileData.query';
 
 interface SharedPageQuery extends ParsedUrlQuery {
   folderId?: string;
 }
 
-interface ProcessedSharedFolderLink extends TSampleFolderLink {
-  updated_at: null | string;
-  folder_id: number;
-}
-
-export interface ProcessedFolderOwnerProfile extends SharedUserProfile {
-  folderName: string;
-}
-
 interface SharedPageProps {
-  folderId?: string;
-  sharedFolder: SharedUserFolder;
-  folderOwnerProfile: ProcessedFolderOwnerProfile;
-  sharedFolderLinks: ProcessedSharedFolderLink[];
+  folderId: number;
+  folderName: string;
+  userId: number;
+  dehydratedState: DehydratedState;
 }
 
-const SharedPage = ({
-  folderOwnerProfile,
-  sharedFolderLinks,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  // TODO: 필드 다른 게 몇 개 있어서 다음 번 미션 때 사용여부 확인하고 지우기
-  // const { links, userInfo } = useGetUserFolders();
-
+const SharedPage = ({ folderId, userId, folderName }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
       <Head>
         <title>Linkbrary shared page</title>
       </Head>
       <Header />
-      <Banner folderOwnerInfo={folderOwnerProfile} />
-      <Article links={sharedFolderLinks} />
+      <Banner userId={userId} folderName={folderName} />
+      <Article folderId={folderId} />
       <Footer />
     </>
   );
@@ -70,30 +57,25 @@ export const getServerSideProps: GetServerSideProps<SharedPageProps> = async (co
     };
   }
 
+  const queryClient = getQueryClient();
+
   try {
-    const sharedFolderResponse = (await getSharedUserFolder(folderId)).data[0];
-    const { user_id } = sharedFolderResponse;
+    const numericFolderId = Number(folderId);
 
-    const sharedUserProfileResponse = await getSharedUserProfileData(user_id);
-
-    const sharedFolderLinks = (await getSharedFolderLinks({ userId: user_id, folderId })).data;
-
-    const processedSharedFolderLinks: ProcessedSharedFolderLink[] = sharedFolderLinks.map((link) => {
-      const { created_at, image_source, ...rest } = link;
-
-      return {
-        ...rest,
-        createdAt: created_at,
-        imageSource: image_source,
-      };
-    });
+    const promiseAllResult = await promiseAllFactory([
+      getFolderInfo(numericFolderId),
+      usePrefetchFolderLinks(numericFolderId),
+    ]);
+    const sharedFolderResponse = promiseAllResult[0];
+    const { user_id, name } = sharedFolderResponse[0];
+    await usePrefetchUserProfileData(user_id);
 
     return {
       props: {
-        folderId,
-        sharedFolder: sharedFolderResponse,
-        folderOwnerProfile: { ...sharedUserProfileResponse.data[0], folderName: sharedFolderResponse.name },
-        sharedFolderLinks: processedSharedFolderLinks,
+        folderId: numericFolderId,
+        folderName: name,
+        userId: user_id,
+        dehydratedState: dehydrate(queryClient),
       },
     };
   } catch (error) {
