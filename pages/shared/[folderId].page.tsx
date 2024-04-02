@@ -18,6 +18,12 @@ import { usePrefetchUserProfileData } from './hooks/usePrefetchUserProfileData.q
 
 interface SharedPageQuery extends ParsedUrlQuery {
   folderId?: string;
+  folder?: string;
+  user?: string;
+}
+
+interface SharedPageParams extends ParsedUrlQuery {
+  folderId?: string;
 }
 
 interface SharedPageProps {
@@ -44,10 +50,11 @@ const SharedPage = ({ folderId, userId, folderName }: InferGetServerSidePropsTyp
 export default SharedPage;
 
 export const getServerSideProps: GetServerSideProps<SharedPageProps> = async (context) => {
-  const { folderId } = context.query as SharedPageQuery;
+  const { folder, user } = context.query as SharedPageQuery;
+  const { folderId } = context.params as SharedPageParams;
 
-  if (folderId === undefined) {
-    console.error('folderId is undefined');
+  if (folderId === undefined || folder === undefined || user === undefined) {
+    console.error('folderId, folder, or user should not be undefined.');
 
     return {
       redirect: {
@@ -62,13 +69,19 @@ export const getServerSideProps: GetServerSideProps<SharedPageProps> = async (co
   try {
     const numericFolderId = Number(folderId);
 
+    const getFolderInfoAndPrefetchFolderLinks = async (folderId: number) => {
+      const sharedFolderResponse = await getFolderInfo(folderId);
+      const { user_id, name } = sharedFolderResponse[0];
+      await usePrefetchUserProfileData(user_id);
+
+      return { user_id, name };
+    };
+
     const promiseAllResult = await promiseAllFactory([
-      getFolderInfo(numericFolderId),
+      getFolderInfoAndPrefetchFolderLinks(numericFolderId),
       usePrefetchFolderLinks(numericFolderId),
     ]);
-    const sharedFolderResponse = promiseAllResult[0];
-    const { user_id, name } = sharedFolderResponse[0];
-    await usePrefetchUserProfileData(user_id);
+    const { name, user_id } = promiseAllResult[0];
 
     return {
       props: {

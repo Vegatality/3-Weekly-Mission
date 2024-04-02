@@ -1,6 +1,5 @@
 import classNames from 'classnames/bind';
 
-import { LinkType } from '@apis/link';
 import { useMatchedLinksWithDebounce } from '@hooks/useMatchedLinksWithDebounce';
 
 import styles from './CardContainer.module.css';
@@ -15,19 +14,9 @@ type TCardContainerProps = {
 };
 
 const CardContainer = ({ folderId, input }: TCardContainerProps) => {
-  const { data, status } = useGetSortedFolderLinksData(folderId);
+  const { data = [] } = useGetSortedFolderLinksData(folderId);
 
-  if (status === 'pending') {
-    return <div>Loading...</div>;
-  }
-
-  let links: LinkType.Link[] = [];
-
-  if (status === 'success') {
-    links = data;
-  }
-
-  const matchedLinks = useMatchedLinksWithDebounce(links, input, ['title', 'description', 'url']);
+  const matchedLinks = useMatchedLinksWithDebounce(data, input, ['title', 'description', 'url']);
 
   return (
     <section className={cn('card-container')}>

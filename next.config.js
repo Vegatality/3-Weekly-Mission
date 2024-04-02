@@ -10,6 +10,22 @@ const nextConfig = {
     },
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  rewrites: async () => {
+    return [
+      {
+        source: '/shared',
+        destination: '/shared/:folderId',
+        has: [
+          {
+            type: 'query',
+            key: 'folder',
+            // https://nextjs.org/docs/pages/api-reference/next-config-js/rewrites#header-cookie-and-query-matching
+            value: '(?<folderId>.*)',
+          },
+        ],
+      },
+    ];
+  },
   webpack(config) {
     const fileLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
 
