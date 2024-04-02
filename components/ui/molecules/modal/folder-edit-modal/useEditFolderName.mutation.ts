@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { editFolderName } from '@api/folder';
+import { editFolderName } from '@apis/folder';
 import { folderQueryKeys } from '@queries/folder';
 
 export const useEditFolderName = () => {

@@ -1,8 +1,8 @@
-import { getFolderInfo } from '@api/folder/getFolderInfo';
-import { getFolderList } from '@api/folder/getFolderList';
+import { getFolderInfo } from '@apis/folder/getFolderInfo';
+import { getFolderList } from '@apis/folder/getFolderList';
 
 export const folderQueryKeys = {
-  masterKey: () => ['folder-list'],
+  masterKey: () => ['folder'],
   folderInfo: (folderId: number) => [...folderQueryKeys.masterKey(), folderId],
 };
 

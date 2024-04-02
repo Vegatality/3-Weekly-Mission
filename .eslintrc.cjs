@@ -164,7 +164,7 @@ module.exports = {
             position: 'after',
           },
           {
-            pattern: '@{lib,utils,hooks,event,api,provider,queries}/**/*',
+            pattern: '@{lib,utils,hooks,event,api,apis,provider,queries}/**/*',
             group: 'internal',
             position: 'after',
           },

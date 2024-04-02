@@ -1,5 +1,5 @@
-import { getCurrentUserProfileData } from '@api/user/getCurrentUserProfileData';
-import { getFolderOwnerProfileData } from '@api/user/getUserProfileData';
+import { getCurrentUserProfileData } from '@apis/user/getCurrentUserProfileData';
+import { getFolderOwnerProfileData } from '@apis/user/getUserProfileData';
 
 export const userQueryKeys = {
   masterKey: () => ['user'],

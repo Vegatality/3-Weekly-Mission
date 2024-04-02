@@ -1,4 +1,4 @@
-import { fetchWithPost } from '@api/instance/fetchWithPost';
+import { fetchWithPost } from '@apis/instance/fetchWithPost';
 
 import { SignParams, SignResponse } from './types';
 

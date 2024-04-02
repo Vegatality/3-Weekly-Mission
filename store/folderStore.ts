@@ -1,4 +1,4 @@
-import { FolderType } from '@api/folder';
+import { FolderType } from '@apis/folder';
 
 import { createWithEqualityFn } from './custom/traditional';
 import { shallow } from './custom/vanilla/shallow';

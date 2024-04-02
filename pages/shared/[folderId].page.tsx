@@ -4,8 +4,8 @@ import { dehydrate, DehydratedState } from '@tanstack/react-query';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Head from 'next/head';
 
-import { getFolderInfo } from '@api/folder/getFolderInfo';
-import { getStringTypeError } from '@api/util/getStringTypeError';
+import { getFolderInfo } from '@apis/folder/getFolderInfo';
+import { getStringTypeError } from '@apis/util/getStringTypeError';
 import { getQueryClient } from '@lib/getQueryClient';
 import { promiseAllFactory } from '@utils/promise/promiseAllFactory';
 

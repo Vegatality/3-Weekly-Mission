@@ -19,7 +19,7 @@
       "@pages/*": ["./pages/*"],
       "@utils/*": ["./utils/*"],
       "@hooks/*": ["./hooks/*"],
-      "@api/*": ["./api/*"],
+      "@apis/*": ["./apis/*"],
       "@assets/*": ["./assets/*"],
       "@layout/*": ["./shared/layout/*"],
       "@routes/*": ["./shared/routes/*"],

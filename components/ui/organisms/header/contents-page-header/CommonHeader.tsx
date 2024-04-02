@@ -9,7 +9,7 @@ import { objectFit } from '@style/object-fit/object-fit';
 
 import LoginButton from '@components/ui/atoms/button/login-btn/LoginButton';
 
-import { UserType } from '@api/user';
+import { UserType } from '@apis/user';
 import { setUserId } from '@utils/session-storage/setUserId';
 
 import styles from './CommonHeader.module.css';

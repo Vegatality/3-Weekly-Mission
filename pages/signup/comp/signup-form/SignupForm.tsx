@@ -5,7 +5,7 @@ import InputWithLabel from '@components/ui/atoms/input/input-with-label';
 import SignForm from '@components/ui/molecules/form/sign-form';
 import { StErrorMsg } from '@pages/signin/comp/signin-form/SigninForm';
 
-import { checkEmailDuplication } from '@api/auth/checkEmailDuplication';
+import { checkEmailDuplication } from '@apis/auth/checkEmailDuplication';
 import { useFormOnSubmit } from '@hooks/useFormOnSubmit';
 import { setToken } from '@utils/local-storage/setToken';
 

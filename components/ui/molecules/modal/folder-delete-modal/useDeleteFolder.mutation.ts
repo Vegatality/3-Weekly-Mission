@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { deleteFolder } from '@api/folder';
+import { deleteFolder } from '@apis/folder';
 import { folderQueryKeys } from '@queries/folder';
 
 export const useDeleteFolder = () => {

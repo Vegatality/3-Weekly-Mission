@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { FolderType } from '@api/folder';
+import { FolderType } from '@apis/folder';
 import { folderQuery } from '@queries/folder';
 
 export interface FolderCategoryDataWithIdTotal extends Partial<Omit<FolderType.FolderCategoryData, 'id' | 'name'>> {

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { createNewFolder } from '@api/folder/createNewFolder';
+import { createNewFolder } from '@apis/folder/createNewFolder';
 import { folderQueryKeys } from '@queries/folder';
 
 export const useCreateNewFolder = () => {

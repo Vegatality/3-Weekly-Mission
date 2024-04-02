@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 
-import { getObjectTypeError } from '@api/util/getObjectTypeError';
+import { getObjectTypeError } from '@apis/util/getObjectTypeError';
 
 import { axiosToken } from './axiosToken';
 

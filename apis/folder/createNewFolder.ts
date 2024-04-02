@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-import { axiosToken } from '@api/instance/axiosToken';
+import { axiosToken } from '@apis/instance/axiosToken';
 
 import { CreateFolder } from './types';
 

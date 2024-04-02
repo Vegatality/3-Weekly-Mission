@@ -1,4 +1,4 @@
-import { getWithAccessToken } from '@api/instance/getWithAccessToken';
+import { getWithAccessToken } from '@apis/instance/getWithAccessToken';
 
 import { GetCurrentUserProfileDataResponse } from './types';
 

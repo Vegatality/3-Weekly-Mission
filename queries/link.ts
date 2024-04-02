@@ -1,5 +1,5 @@
-import { getSortedFolderLinksData } from '@api/link/getSortedFolderLinksData';
-import { getTotalLinks } from '@api/link/getTotalLinks';
+import { getSortedFolderLinksData } from '@apis/link/getSortedFolderLinksData';
+import { getTotalLinks } from '@apis/link/getTotalLinks';
 
 export const linkQueryKeys = {
   masterKey: () => ['links'],

@@ -1,4 +1,4 @@
-import { axiosToken } from '@api/instance/axiosToken';
+import { axiosToken } from '@apis/instance/axiosToken';
 
 // 204 삭제 성공
 // 400 요청 오류

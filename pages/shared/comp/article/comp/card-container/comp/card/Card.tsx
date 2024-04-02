@@ -1,7 +1,7 @@
 import LinkCard from '@components/ui/molecules/card/link-card';
 import { TCardProviderContext } from '@components/ui/molecules/card/link-card/context/CardProvider';
 
-import { LinkType } from '@api/link';
+import { LinkType } from '@apis/link';
 
 import styles from './Card.module.css';
 

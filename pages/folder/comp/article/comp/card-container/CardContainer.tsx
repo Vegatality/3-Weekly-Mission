@@ -3,7 +3,7 @@ import { useState } from 'react';
 import classNames from 'classnames/bind';
 import { useRouter } from 'next/router';
 
-import { LinkType } from '@api/link';
+import { LinkType } from '@apis/link';
 import { useMatchedLinksWithDebounce } from '@hooks/useMatchedLinksWithDebounce';
 
 import styles from './CardContainer.module.css';

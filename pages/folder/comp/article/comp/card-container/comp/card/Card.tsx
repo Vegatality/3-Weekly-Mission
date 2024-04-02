@@ -10,7 +10,7 @@ import { LinkDeleteModal } from '@components/ui/molecules/modal/link-delete-moda
 import { useFolderNameAndLinkCount } from '@pages/folder/hooks/useFolderNameAndLinkCount.query';
 import { useGetFolderId } from '@pages/folder/hooks/useGetFolderId';
 
-import { LinkType } from '@api/link';
+import { LinkType } from '@apis/link';
 import { useModalList, useToggleModal } from '@hooks/use-modal';
 
 import styles from './Card.module.css';
@@ -42,19 +42,18 @@ const Card = ({ link }: CardProps) => {
   ) => {
     e.preventDefault();
 
-    if (folderId) {
-      openModalList({ modalKey: ['linkDeleteModal'], ModalComponent, props: { linkUrl, linkId } });
-    }
+    openModalList({ modalKey: ['linkDeleteModal'], ModalComponent, props: { linkUrl, linkId } });
   };
 
   const handleFolderAddMenuBtn = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ModalComponent: typeof AddToFolderModal,
     linkUrl: string,
+    folderId?: number,
   ) => {
     e.preventDefault();
 
-    if (folderId && status === 'success') {
+    if (status === 'success') {
       openModalList({ modalKey: ['addToFolderModal'], ModalComponent, props: { linkUrl, folderId, folderList: data } });
     }
   };
@@ -85,7 +84,9 @@ const Card = ({ link }: CardProps) => {
                 <SelectMenu.StMenuButton onClick={(e) => handleDeleteMenuBtn(e, LinkDeleteModal, link.url, link.id)}>
                   삭제하기
                 </SelectMenu.StMenuButton>
-                <SelectMenu.StMenuButton onClick={(e) => handleFolderAddMenuBtn(e, AddToFolderModal, link.url)}>
+                <SelectMenu.StMenuButton
+                  onClick={(e) => handleFolderAddMenuBtn(e, AddToFolderModal, link.url, folderId)}
+                >
                   폴더에 추가
                 </SelectMenu.StMenuButton>
               </SelectMenu>

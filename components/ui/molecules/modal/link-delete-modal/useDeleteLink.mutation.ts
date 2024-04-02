@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { deleteLink } from '@api/link';
+import { deleteLink } from '@apis/link';
 import { linkQueryKeys } from '@queries/link';
 
 export const useDeleteLink = () => {

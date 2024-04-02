@@ -3,7 +3,7 @@ import { memo } from 'react';
 import classNames from 'classnames/bind';
 import Image from 'next/image';
 
-import { UserType } from '@api/user';
+import { UserType } from '@apis/user';
 
 import styles from './LoginSuccessProfile.module.css';
 

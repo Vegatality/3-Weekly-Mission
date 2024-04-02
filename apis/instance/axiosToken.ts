@@ -40,6 +40,8 @@ axiosToken.interceptors.response.use(
   },
 
   (error: AxiosError | Error): Promise<AxiosError> => {
+    // const originalConfig = error.config;
+
     if (isAxiosError(error)) {
       // 401 인증 오류
       if (error.response?.status === 401) {

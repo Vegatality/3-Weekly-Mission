@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
@@ -33,7 +33,7 @@ const AddToFolderModal: ModalComponentForList<AddToFolderModalProps> = ({
   closeModal,
   modalRef,
 }) => {
-  const [selectedFolderId, setSelectedFolderId] = useState<number | undefined>(currentFolderId);
+  const [selectedFolderId, setSelectedFolderId] = useState<number | undefined>();
   const { mutate } = useCreateLink();
 
   const createLink = ({ folderId, url }: { folderId: number | undefined; url: string }) => {
@@ -53,6 +53,10 @@ const AddToFolderModal: ModalComponentForList<AddToFolderModalProps> = ({
   const onSelectHandler = (folderId: number) => {
     setSelectedFolderId(folderId);
   };
+
+  useEffect(() => {
+    setSelectedFolderId(currentFolderId);
+  }, [currentFolderId]);
 
   return (
     <Modal.StModalDim>

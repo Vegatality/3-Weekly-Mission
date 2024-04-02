@@ -1,4 +1,4 @@
-import { fetchWithGet } from '@api/instance/fetchWithGet';
+import { fetchWithGet } from '@apis/instance/fetchWithGet';
 
 import { FolderOwnerProfileResponse } from './types';
 
